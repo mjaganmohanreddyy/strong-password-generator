@@ -7,37 +7,18 @@ import { useEffect } from "react";
 import { useState, useCallback } from "react";
 import { useCopy } from '@/hooks/use-copy';
 import { getSecureRandomInt } from '@/helpers/crypto';
-import { capitalizeString } from '@/helpers/string';
-import zxcvbn from 'zxcvbn';
 import clsx from "clsx";
 import {
     FaRegCopy,
-    FaArrowRotateLeft,
     FaCheck,
-    FaRegEye,
-    FaRegEyeSlash,
+  
   } from 'react-icons/fa6'
 
-import { wordlist } from '@/data/wordlist';
-
-const WORDLIST = wordlist;
-
-import styles from './password.module.css';
 
 
 export default function Password(){
-    const [activeTab, setActiveTab] = useLocalStorage<'normal' | 'diceware'>(
-        'pswd-active-tab',
-        'normal',
-      );
       const { copy, copying } = useCopy();
-      const [showPassword, setShowPassword] = useLocalStorage(
-        'pswd-show-password',
-        true,
-      );
-    
       const [password, setPassword] = useState('');
-      const [num,setnum] = useState(6)
       const [length, setLength] = useLocalStorage('pswd-length', 12);
       const [includeUpper, setIncludeUpper] = useLocalStorage(
         'pswd-include-upper',
@@ -68,9 +49,6 @@ export default function Password(){
         '',
       );
     
-      const [wordCount, setWordCount] = useLocalStorage('pswd-word-count', 6);
-      const [separator, setSeparator] = useLocalStorage('pswd-separator', 'space');
-      const [capitalize, setCapitalize] = useLocalStorage('pswd-capitalize', false);
     
       const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
@@ -80,7 +58,6 @@ export default function Password(){
       const SIMILAR_CHARACTERS = 'Il1O0';
     
       const generatePassword = useCallback(() => {
-        if (activeTab === 'normal') {
           let characterSet = '';
     
           if (includeUpper) characterSet += UPPERCASE;
@@ -123,65 +100,26 @@ export default function Password(){
     
           const newPassword = passwordCharacters.join('');
           setPassword(newPassword);
-        } else {
-          if (WORDLIST.length === 0) {
-            alert('Wordlist is empty. Please provide a valid wordlist.');
-            return;
-          }
-    
-          const words = [];
-          const wordlistLength = WORDLIST.length;
-    
-          for (let i = 0; i < wordCount; i++) {
-            const index = getSecureRandomInt(wordlistLength);
-            const word = WORDLIST[index];
-    
-            words.push(capitalize ? capitalizeString(word) : word);
-          }
-    
-          setPassword(
-            words.join(
-              separator === 'space' ? ' ' : separator === 'dash' ? '-' : '',
-            ),
-          );
-        }
+         
+        
       }, [
         includeUpper,
         includeLower,
         includeNumbers,
         includeSymbols,
         length,
-        wordCount,
-        activeTab,
-        separator,
         excludeSimilar,
         customSymbols,
-        capitalize,
+ 
         excludeSymbols,
       ]);
     
       useEffect(() => {
         generatePassword();
-      }, [activeTab, generatePassword]);
+      }, [ generatePassword]);
     
-      const [strength, setStrength] = useState(0);
-      const strenthColor = [
-        'transparent',
-        '#ef4444',
-        '#f97316',
-        '#eab308',
-        '#65a30d',
-        '#22c55e',
-      ][strength];
     
-      useEffect(() => {
-        if (password) {
-          const result = zxcvbn(password);
-          setStrength(result.score + 1);
-        } else {
-          setStrength(0);
-        }
-      }, [password]);
+    
     
     
     return(
@@ -192,7 +130,7 @@ export default function Password(){
 
 <Input readOnly 
        className=" bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 text-black mx-auto transition cursor-copy border items-center text-center py-2 pr-10" 
-       type={showPassword ? 'text' : 'password'}
+       type={ 'text'}
        value={password}
        width={30}
        height={30}
@@ -214,7 +152,6 @@ onClick={() => generatePassword()}
 </Button>
 
 <div className="  flex justify-between  mt-1 text-2xl min-h-14 items-center  leading-6 font-bold border-solid border-2 border-gray-600  px-2 py-2">
-{activeTab === 'normal' && (
 <>
 <label htmlFor="lenth" className=" flex  p-0  text-black gap-1 box-border text-base leading-6 font-bold text-center  items-center mx-2 noto-sans">password length :</label>
 <input
@@ -237,7 +174,7 @@ onChange={e => setLength(Number(e.target.value))}
 />
 </>
 
-)}
+
               
 </div>
 <div className="flex justify-between  text-2xl min-h-14 items-center  leading-6 font-bold">
