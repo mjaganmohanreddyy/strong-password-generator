@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
